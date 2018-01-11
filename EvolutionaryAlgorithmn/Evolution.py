@@ -8,7 +8,6 @@ randomly chosen and mated individuals
 import random
 import datetime
 
-
 POPULATION_SIZE = 2000
 LENGTH_OF_INDIVIDUAL = 1000
 
@@ -40,7 +39,7 @@ class Individual:
 
     def crossover(self, other, comparator):
         new_string = ""
-        # use one random crossover point instead on each single crossover
+        # todo dont crossover every bit, instead create a random point and perform a crossover
         for idx, char in enumerate(self.information):
             new_string += self.information[idx] if random.uniform(0, 1) > 0.5 else other.information[idx]
         return Individual(new_string, comparator)
@@ -74,8 +73,8 @@ class Population:
         return best_individual
 
     def crossover(self):
-        crossover_size = int(self.r * len(self.population)/2)
-        print('performing crossover of ' + str(crossover_size) + ' individuals ...')
+        crossover_size = int(self.r * len(self.population) / 2)
+        print('performing crossover of %s individuals...' % crossover_size)
         crossed = list()
         chosen = list()
         for i in xrange(0, crossover_size):
@@ -94,7 +93,7 @@ class Population:
     def selection_rank(self):
         rank_list_size = int((1 - self.r) * len(self.population))
         rank_list_size += 0 if rank_list_size % 2 == 0 else rank_list_size + 1
-        print('rank selecting ' + str(rank_list_size) + ' individuals')
+        print('rank selecting %s individuals' % rank_list_size)
         selected = list()
         selected.extend(sorted(self.population, key=lambda individual: -individual.fitness)[0:rank_list_size])
         return selected
@@ -104,11 +103,12 @@ class Population:
         new_population.extend(self.selection_rank())
         new_population.extend(self.crossover())
         mutated = 0
+        # todo improve the alg by keeping the best individual untouched
         for idx, indv in enumerate(new_population):
             if random.uniform(0, 1) <= self.m:
                 new_population[idx].mutate(self.comparator)
                 mutated += 1
-        print('mutated ' + str(mutated) + ' individuals')
+        print('mutated %s individuals' % mutated)
         self.population = new_population
 
     def evolve(self):
@@ -118,20 +118,20 @@ class Population:
         while best_individual.fitness < 0 and number_of_runs < self.max_runs:
             round_time = datetime.datetime.now()
             number_of_runs += 1
-            print('#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.# run number:',str(number_of_runs))
+            print('======================== RUN NUMBER %s  =====================================' % number_of_runs)
             self.one_evolution_step()
             best_individual = self.get_best_individual()
-            print('best string ' + str(best_individual.fitness) +':' + best_individual.information)
-            print('searched string :' + self.comparator)
-
-            print('round runtime: ' + str(datetime.datetime.now()-round_time))
-        print('found individual with fitness of 0 : ' + best_individual.information)
-        print('runs: ' + str(number_of_runs))
+            print('best string %s : %s' % (best_individual.fitness, best_individual.information))
+            print('searched string : %s' % self.comparator)
+            print('round runtime: %s ' % (datetime.datetime.now() - round_time))
+            print('=============================================================================')
+        print('found individual with fitness of 0 :  %s ' % best_individual.information)
+        print('runs: %s' % number_of_runs)
         return datetime.datetime.now() - start_time
 
 
 random_bit_string = gen_rand_bitstring(LENGTH_OF_INDIVIDUAL)
-print('generated random string size ' + str(LENGTH_OF_INDIVIDUAL) + ' : ' + random_bit_string)
+print('generated random string size %s : %s' % (LENGTH_OF_INDIVIDUAL, random_bit_string))
 population = Population(POPULATION_SIZE, LENGTH_OF_INDIVIDUAL, random_bit_string, m, r, 1000)
 runtime = population.evolve()
-print('runtime: ' + str(runtime) + 's')
+print('runtime: %ss' % runtime)
