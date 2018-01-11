@@ -13,9 +13,9 @@ POPULATION_SIZE = 2000
 LENGTH_OF_INDIVIDUAL = 1000
 
 # r is the portion of the population which will be replaced by a crossover
-r = 0.4
+r = 0.3
 # m is the mutation rate
-m = 0.6
+m = 0.3
 
 
 def gen_rand_bitstring(length):
@@ -41,20 +41,33 @@ class Individual:
     def crossover(self, other, comparator):
         new_string = ""
 
-        cross_point = int(math.floor(random.uniform(0, 1) * LENGTH_OF_INDIVIDUAL))
-        new_string += self.information[: cross_point]
-        new_string += other.information[cross_point:]
+        """
+        implementation how it should be - works, but not so reliable as the own crossover
+        
+        rand = random.uniform(0, 1)
+        cross_point = int(rand * LENGTH_OF_INDIVIDUAL)
+        if rand > 0.5:
+            new_string += self.information[: cross_point]
+            new_string += other.information[cross_point:]
+        else:
+            new_string += other.information[: cross_point]
+            new_string += self.information[cross_point:]
+
+
+        
+        """
+
         """
         THIS IS THE OLD IMPLEMENTATION -> slower but we will get better results, as the crossover changes more bits 
         -> better for this particular scenario
         if we use the default crossover with ONE crossover point, 
         there comes a point when we dont get besser fitness somehow
         
+         
+        """
+        # old impl
         for idx, char in enumerate(self.information):
             new_string += self.information[idx] if random.uniform(0, 1) > 0.5 else other.information[idx]
-       
-       
-        """
 
         return Individual(new_string, comparator)
 
