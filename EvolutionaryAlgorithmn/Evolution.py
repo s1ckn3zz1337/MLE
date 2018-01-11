@@ -13,9 +13,9 @@ POPULATION_SIZE = 2000
 LENGTH_OF_INDIVIDUAL = 1000
 
 # r is the portion of the population which will be replaced by a crossover
-r = 0.3
+r = 0.4
 # m is the mutation rate
-m = 0.4
+m = 0.6
 
 
 def gen_rand_bitstring(length):
@@ -47,6 +47,8 @@ class Individual:
         """
         THIS IS THE OLD IMPLEMENTATION -> slower but we will get better results, as the crossover changes more bits 
         -> better for this particular scenario
+        if we use the default crossover with ONE crossover point, 
+        there comes a point when we dont get besser fitness somehow
         
         for idx, char in enumerate(self.information):
             new_string += self.information[idx] if random.uniform(0, 1) > 0.5 else other.information[idx]
@@ -114,6 +116,10 @@ class Population:
         new_population = list()
         new_population.extend(self.selection_rank())
         new_population.extend(self.crossover())
+
+        # save the best inidividual -> he wont be modified -> removed
+        # best_individual = new_population.pop(0)
+        # print('fitness of best individual: %s ' % best_individual.fitness)
         mutated = 0
         # todo improve the alg by keeping the best individual untouched
         for idx, indv in enumerate(new_population):
@@ -122,6 +128,8 @@ class Population:
                 mutated += 1
         print('mutated %s individuals' % mutated)
         self.population = new_population
+        # add the best individual
+        # self.population.append(best_individual)
 
     def evolve(self):
         number_of_runs = 0
