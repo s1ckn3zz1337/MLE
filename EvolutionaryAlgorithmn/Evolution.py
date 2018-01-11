@@ -7,6 +7,7 @@ randomly chosen and mated individuals
 """
 import random
 import datetime
+import math
 
 POPULATION_SIZE = 2000
 LENGTH_OF_INDIVIDUAL = 1000
@@ -14,7 +15,7 @@ LENGTH_OF_INDIVIDUAL = 1000
 # r is the portion of the population which will be replaced by a crossover
 r = 0.3
 # m is the mutation rate
-m = 0.3
+m = 0.4
 
 
 def gen_rand_bitstring(length):
@@ -39,9 +40,20 @@ class Individual:
 
     def crossover(self, other, comparator):
         new_string = ""
-        # todo dont crossover every bit, instead create a random point and perform a crossover
+
+        cross_point = int(math.floor(random.uniform(0, 1) * LENGTH_OF_INDIVIDUAL))
+        new_string += self.information[: cross_point]
+        new_string += other.information[cross_point:]
+        """
+        THIS IS THE OLD IMPLEMENTATION -> slower but we will get better results, as the crossover changes more bits 
+        -> better for this particular scenario
+        
         for idx, char in enumerate(self.information):
             new_string += self.information[idx] if random.uniform(0, 1) > 0.5 else other.information[idx]
+       
+       
+        """
+
         return Individual(new_string, comparator)
 
     def mutate(self, comparator):
@@ -118,7 +130,7 @@ class Population:
         while best_individual.fitness < 0 and number_of_runs < self.max_runs:
             round_time = datetime.datetime.now()
             number_of_runs += 1
-            print('======================== RUN NUMBER %s  =====================================' % number_of_runs)
+            print('===========================   RUN NUMBER %s   ===============================' % number_of_runs)
             self.one_evolution_step()
             best_individual = self.get_best_individual()
             print('best string %s : %s' % (best_individual.fitness, best_individual.information))
